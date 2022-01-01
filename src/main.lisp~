@@ -1,0 +1,5 @@
+(defpackage lisped
+  (:use :cl))
+(in-package :lisped)
+
+;; blah blah blah.
