@@ -47,6 +47,11 @@
 (defparameter *help-overlay* nil)
 (defparameter *help-test-widget* nil)
 
+(defparameter +tooltip-css+
+  "GtkLabel {
+    color: green;
+   }")
+
 (defun create-mainwindow ()
   (setf *empty-f-keys* (create-empty-keys))
   (within-main-loop
@@ -59,6 +64,7 @@
           (main-box (make-instance 'gtk-box
                               :orientation :vertical
                               :spacing 6))
+	  (provider (make-instance 'gtk-css-provider))
 	  (textview (make-instance 'gtk-text-view
                                    :wrap-mode :word
                                    :top-margin 2
@@ -74,8 +80,13 @@
       (setf *help-test-widget* (make-instance 'gtk-label :label "Hallo"))
       (gtk-container-add *help-overlay* main-box)
       (gtk-container-add window *help-overlay*)
-      (let ((fixed (make-instance 'gtk-fixed)))
-	(gtk-fixed-put fixed (make-instance 'gtk-label :margin 10 :label "Hallo") 10 10)
+      (gtk-css-provider-load-from-path provider "css.txt")
+      (let ((fixed (make-instance 'gtk-fixed))
+	    (label (make-instance 'gtk-button :margin 200 :label "Hallo")))
+	(gtk-style-context-add-provider (gtk-widget-get-style-context label)
+					provider
+					+gtk-style-provider-priority-application+)
+	(gtk-fixed-put fixed label 100 100)
 	(gtk-overlay-add-overlay *help-overlay* fixed))
       (gtk-widget-show-all window)
       (setf *win* window))))
