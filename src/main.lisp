@@ -34,7 +34,7 @@
 (defparameter *esc-and-f-keys-definitions*
   (list (cons 'ESC  (make-key-definition :icon-file "icons/empty.png"        :short-help "" :long-help"" ))
 	(cons 'F1   (make-key-definition :icon-file "icons/help.png"         :short-help "help" :long-help"" ))
-	(cons 'F2   (make-key-definition :icon-file "icons/menu.svg"         :short-help "" :long-help"" ))
+	(cons 'F2   (make-key-definition :icon-file "icons/menu.svg"         :short-help "menu" :long-help"" ))
 	(cons 'F3   (make-key-definition :icon-file "icons/new_file.svg"     :short-help "" :long-help"" ))
 	(cons 'F4   (make-key-definition :icon-file "icons/open_file.svg"    :short-help "" :long-help"" ))
 	(cons 'F5   (make-key-definition :icon-file "icons/save_file.svg"    :short-help "" :long-help"" ))
@@ -57,9 +57,16 @@
 
 (defparameter *empty-f-keys* nil)
 
-(defun addkeys (box)
+(defun addkeys (f-key-box)
   (dolist (key-button *empty-f-keys*)
-    (gtk-box-pack-start box (key-instance-button (cdr key-button)) :expand nil)))
+    (gtk-box-pack-start f-key-box (key-instance-button (cdr key-button)) :expand nil)))
+
+(defun addhelps (help-overlay)
+  (let ((x 10))
+    (dolist (key-button *empty-f-keys*)
+      (print x)
+      (setf x (+ x 30))
+      (gtk-fixed-put help-overlay (key-instance-short-help (cdr key-button)) x 20))))
 
 (defparameter *f-keys-box* nil)
 (defparameter *win* nil)
@@ -92,9 +99,8 @@
       (setf *help-overlay* (make-instance 'gtk-overlay))
       (gtk-container-add *help-overlay* main-box)
       (gtk-container-add window *help-overlay*)
-      (let ((fixed (make-instance 'gtk-fixed))
-	    (tooltip (create-short-help-tooltip "Ein Beispiel lsjdf")))
-	(gtk-fixed-put fixed tooltip 20 20)
+      (let ((fixed (make-instance 'gtk-fixed)))
+	(addhelps fixed)
 	(gtk-overlay-add-overlay *help-overlay* fixed))
       (gtk-widget-show-all window)
       (setf *win* window))))
