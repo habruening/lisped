@@ -73,7 +73,10 @@
 (defparameter *f-keys-box* nil)
 (defparameter *win* nil)
 (defparameter *help-overlay* nil)
-(defparameter *help-test-widget* nil)
+(defparameter *help-widget* nil)
+
+(defun show-help-widget ()
+  (gtk-widget-show-now *help-widget*))
 
 (defun create-mainwindow ()
   (setf *empty-f-keys* (create-empty-keys))
@@ -102,8 +105,21 @@
       (gtk-container-add *help-overlay* main-box)
       (gtk-container-add window *help-overlay*)
       (gtk-widget-show-all window)
-      (let ((fixed (make-instance 'gtk-fixed)))
-	(addhelps fixed)
-	(gtk-overlay-add-overlay *help-overlay* fixed))
+      (setf *help-widget* (make-instance 'gtk-fixed))
+      (addhelps *help-widget*)
+      (gtk-overlay-add-overlay *help-overlay* *help-widget*)
       (gtk-widget-show-all window)
+      (gtk-widget-hide *help-widget*)
+      (g-signal-connect (key-instance-button
+			 (cdr (assoc 'F1 *empty-f-keys*))) "clicked"
+			 (lambda (widget)
+			   (declare (ignore widget))
+			   (gtk-widget-show-now *help-widget*)))
+      (g-signal-connect window
+			"button-press-event"
+			(lambda (widget event)
+			  (declare (ignore widget event))
+			  (gtk-widget-hide *help-widget*)))
       (setf *win* window))))
+
+
