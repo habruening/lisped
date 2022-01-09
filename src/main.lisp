@@ -105,6 +105,7 @@
 	(setf *help-widget* (make-instance 'gtk-fixed))
 	(gtk-container-add window main-and-help-overlay)
 	(gtk-overlay-add-overlay main-and-help-overlay *help-widget*))
+      (gtk-widget-show-all window)
       (apply-active-keys-to-help-overlay *help-widget*)
       (gtk-widget-show-all window)
       (gtk-widget-hide *help-widget*)
