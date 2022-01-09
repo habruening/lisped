@@ -17,7 +17,7 @@
     button))
 
 (defun create-short-help-tooltip (tooltip-text)
-  (let ((css-provider (make-instance 'gtk-css-provider))b
+  (let ((css-provider (make-instance 'gtk-css-provider))
 	(box          (make-instance 'gtk-box))
 	(label        (make-instance 'gtk-label :margin 8 :label tooltip-text)))
     (gtk-css-provider-load-from-path css-provider "css.txt")
@@ -27,29 +27,29 @@
 				    +gtk-style-provider-priority-application+)
     box))
 
-(defstruct key-definition icon-file short-help long-help)
+(defstruct key-definition icon-file short-help long-help action)
 (defstruct key-instance   button action short-help long-help)   
 
 (defparameter *esc-and-f-keys-definitions*
-  (list (cons 'ESC  (make-key-definition :icon-file "icons/empty.png"        :short-help "" :long-help"" ))
-	(cons 'F1   (make-key-definition :icon-file "icons/help.png"         :short-help "help" :long-help"" ))
-	(cons 'F2   (make-key-definition :icon-file "icons/menu.svg"         :short-help "menu" :long-help"" ))
-	(cons 'F3   (make-key-definition :icon-file "icons/new_file.svg"     :short-help "empty file" :long-help"" ))
-	(cons 'F4   (make-key-definition :icon-file "icons/open_file.svg"    :short-help "open file" :long-help"" ))
-	(cons 'F5   (make-key-definition :icon-file "icons/save_file.svg"    :short-help "save file" :long-help"" ))
-	(cons 'F6   (make-key-definition :icon-file "icons/save_file_as.svg" :short-help "save file as" :long-help"" )) 
- 	(cons 'F7   (make-key-definition :icon-file "icons/close.svg"        :short-help "close" :long-help"" ))
-	(cons 'F8   (make-key-definition :icon-file "icons/undo.svg"         :short-help "undo" :long-help"" ))
-	(cons 'F9   (make-key-definition :icon-file "icons/redo.svg"         :short-help "redo" :long-help"" ))
-	(cons 'F10  (make-key-definition :icon-file "icons/copy.svg"         :short-help "copy" :long-help"" ))
-	(cons 'F11  (make-key-definition :icon-file "icons/paste.svg"        :short-help "paste" :long-help"" ))
-	(cons 'F12  (make-key-definition :icon-file "icons/search.svg"       :short-help "search" :long-help"" ))))
+  (list (cons 'ESC  (make-key-definition :icon-file "icons/empty.png"        :short-help "" :long-help"" :action nil))
+	(cons 'F1   (make-key-definition :icon-file "icons/help.png"         :short-help "help" :long-help"" :action nil))
+	(cons 'F2   (make-key-definition :icon-file "icons/menu.svg"         :short-help "menu" :long-help"" :action nil))
+	(cons 'F3   (make-key-definition :icon-file "icons/new_file.svg"     :short-help "empty file" :long-help"" :action nil))
+	(cons 'F4   (make-key-definition :icon-file "icons/open_file.svg"    :short-help "open file" :long-help"" :action nil))
+	(cons 'F5   (make-key-definition :icon-file "icons/save_file.svg"    :short-help "save file" :long-help"" :action nil))
+	(cons 'F6   (make-key-definition :icon-file "icons/save_file_as.svg" :short-help "save file as" :long-help"" :action nil)) 
+ 	(cons 'F7   (make-key-definition :icon-file "icons/close.svg"        :short-help "close" :long-help"" :action nil))
+	(cons 'F8   (make-key-definition :icon-file "icons/undo.svg"         :short-help "undo" :long-help"" :action nil))
+	(cons 'F9   (make-key-definition :icon-file "icons/redo.svg"         :short-help "redo" :long-help"" :action nil))
+	(cons 'F10  (make-key-definition :icon-file "icons/copy.svg"         :short-help "copy" :long-help"" :action nil))
+	(cons 'F11  (make-key-definition :icon-file "icons/paste.svg"        :short-help "paste" :long-help"" :action nil))
+	(cons 'F12  (make-key-definition :icon-file "icons/search.svg"       :short-help "search" :long-help"" :action nil))))
 
 (defun default-keys ()
   (mapcar (lambda (key-definition)
 	    (cons (car key-definition)
 		  (make-key-instance :button (create-key-button (string (car key-definition)) (key-definition-icon-file (cdr key-definition)) (key-definition-short-help (cdr key-definition)))
-				     :action nil 
+				     :action (key-definition-action (cdr key-definition))
 				     :short-help (create-short-help-tooltip (key-definition-short-help (cdr key-definition)))
 				     :long-help nil)))
 	  *esc-and-f-keys-definitions*))
@@ -72,7 +72,14 @@
 (defparameter *f-keys-box* nil)
 (defparameter *win* nil)
 (defparameter *help-overlay* nil)
+(defvar *help-overlay-active* nil)
 (defparameter *help-widget* nil)
+
+(defun toggle-help-overlay ()
+  (if *help-overlay-active*
+      (gtk-widget-hide *help-widget*)
+      (gtk-widget-show-now *help-widget*))
+  (setf *help-overlay-active* (not *help-overlay-active*)))
 
 (defun show-help-widget ()
   (gtk-widget-show-now *help-widget*))
@@ -119,6 +126,12 @@
 			(lambda (widget event)
 			  (declare (ignore widget event))
 			  (gtk-widget-hide *help-widget*)))
-      (setf *win* window))))
+      (setf *win* window)
+      (gtk-widget-add-events window :key-press-mask)
+      (g-signal-connect window
+			"key-press-event"
+			(lambda (widget event)
+			  (declare (ignore widget event))
+			  (toggle-help-overlay))))))
 
 
