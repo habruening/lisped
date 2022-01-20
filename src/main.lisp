@@ -1,10 +1,3 @@
-(require :cl-cffi-gtk)
-
-(defpackage lisped
-  (:use :cl
-   :gtk
-   :gobject))
-
 (in-package :lisped)
 
 (defun create-key-button (name icon tooltip-text)
@@ -27,32 +20,30 @@
 				    +gtk-style-provider-priority-application+)
     box))
 
-(defstruct key-definition icon-file short-help long-help action)
-(defstruct key-instance   button action short-help long-help)   
+(defstruct key-instance button action short-help long-help)
 
-(defparameter *esc-and-f-keys-definitions*
-  (list (cons 'ESC  (make-key-definition :icon-file "icons/empty.png"        :short-help "" :long-help"" :action nil))
-	(cons 'F1   (make-key-definition :icon-file "icons/help.png"         :short-help "help" :long-help"" :action nil))
-	(cons 'F2   (make-key-definition :icon-file "icons/menu.svg"         :short-help "menu" :long-help"" :action nil))
-	(cons 'F3   (make-key-definition :icon-file "icons/new_file.svg"     :short-help "empty file" :long-help"" :action nil))
-	(cons 'F4   (make-key-definition :icon-file "icons/open_file.svg"    :short-help "open file" :long-help"" :action nil))
-	(cons 'F5   (make-key-definition :icon-file "icons/save_file.svg"    :short-help "save file" :long-help"" :action nil))
-	(cons 'F6   (make-key-definition :icon-file "icons/save_file_as.svg" :short-help "save file as" :long-help"" :action nil)) 
- 	(cons 'F7   (make-key-definition :icon-file "icons/close.svg"        :short-help "close" :long-help"" :action nil))
-	(cons 'F8   (make-key-definition :icon-file "icons/undo.svg"         :short-help "undo" :long-help"" :action nil))
-	(cons 'F9   (make-key-definition :icon-file "icons/redo.svg"         :short-help "redo" :long-help"" :action nil))
-	(cons 'F10  (make-key-definition :icon-file "icons/copy.svg"         :short-help "copy" :long-help"" :action nil))
-	(cons 'F11  (make-key-definition :icon-file "icons/paste.svg"        :short-help "paste" :long-help"" :action nil))
-	(cons 'F12  (make-key-definition :icon-file "icons/search.svg"       :short-help "search" :long-help"" :action nil))))
+(defun empty-f-keys ()
+  (mapcar (lambda (key-name)
+	    (cons key-name
+		  (make-key-instance :button (create-key-button (string key-name)
+								+empty-key-icon+
+								"no action")
+				     :action nil
+				     :short-help "no action"
+				     :long-help nil)))
+	  +esc-and-f-key-names+))
+
 
 (defun default-keys ()
   (mapcar (lambda (key-definition)
 	    (cons (car key-definition)
-		  (make-key-instance :button (create-key-button (string (car key-definition)) (key-definition-icon-file (cdr key-definition)) (key-definition-short-help (cdr key-definition)))
+		  (make-key-instance :button (create-key-button (string (car key-definition))
+								(key-definition-icon-file (cdr key-definition))
+								(key-definition-short-help (cdr key-definition)))
 				     :action (key-definition-action (cdr key-definition))
 				     :short-help (create-short-help-tooltip (key-definition-short-help (cdr key-definition)))
 				     :long-help nil)))
-	  *esc-and-f-keys-definitions*))
+	  +esc-and-f-keys-definitions+))
 
 (defparameter *active-keys* nil)
 
@@ -132,6 +123,7 @@
 			"key-press-event"
 			(lambda (widget event)
 			  (declare (ignore widget event))
-			  (toggle-help-overlay))))))
+			  (toggle-help-overlay))
+			:after T))))
 
 
