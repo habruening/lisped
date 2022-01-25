@@ -22,19 +22,19 @@
 
 (defstruct key-instance button action short-help long-help)
 
-(defun empty-f-keys ()
+(defun create-empty-f-keys ()
   (mapcar (lambda (key-name)
 	    (cons key-name
 		  (make-key-instance :button (create-key-button (string key-name)
 								+empty-key-icon+
 								"no action")
 				     :action nil
-				     :short-help "no action"
+				     :short-help (create-short-help-tooltip "undefined")
 				     :long-help nil)))
 	  +esc-and-f-key-names+))
 
 
-(defun default-keys ()
+(defun create-default-keys ()
   (mapcar (lambda (key-definition)
 	    (cons (car key-definition)
 		  (make-key-instance :button (create-key-button (string (car key-definition))
@@ -76,7 +76,7 @@
   (gtk-widget-show-now *help-widget*))
 
 (defun create-mainwindow ()
-  (setf *active-keys* (default-keys))
+  (setf *active-keys* (create-empty-f-keys))
   (within-main-loop
     (let ((window (make-instance 'gtk-window
                                  :type :toplevel
