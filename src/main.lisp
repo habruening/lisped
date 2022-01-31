@@ -45,11 +45,30 @@
 				     :long-help nil)))
 	  +esc-and-f-keys-definitions+))
 
+(defun create-all-keys ()
+  (list (cons 'default-keys (create-default-keys))
+	(cons 'no-keys (create-empty-f-keys))))
+
+(defparameter *available-keys* nil)
 (defparameter *active-keys* nil)
 
 (defun apply-active-keys-to-toolbar (toolbar-box)
   (dolist (key-button *active-keys*)
     (gtk-box-pack-start toolbar-box (key-instance-button (cdr key-button)) :expand nil)))
+
+(defun activate-keys (toolbar-box new-keys)
+  (if (eql new-keys nil)
+      nil
+      (progn (print (car (car new-keys)))
+	     (activate-keys toolbar-box (cdr new-keys)))))
+
+(defun clear-toolbar (toolbar-box)
+  (let ((buttons-to-be-deleted nil))
+    (gtk-container-foreach toolbar-box
+			   (lambda (key-button)
+			     (setq buttons-to-be-deleted
+				   (append buttons-to-be-deleted (list key-button)))))
+    buttons-to-be-deleted))
 
 (defun apply-active-keys-to-help-overlay (help-overlay)
   (dolist (key-button *active-keys*)
@@ -76,6 +95,7 @@
   (gtk-widget-show-now *help-widget*))
 
 (defun create-mainwindow ()
+  (setf *available-keys* (create-all-keys)) 
   (setf *active-keys* (create-empty-f-keys))
   (within-main-loop
     (let ((window (make-instance 'gtk-window
