@@ -1,4 +1,4 @@
-(in-package :lisped)
+(in-package :toolbar)
 
 (defun create-key-button (name icon tooltip-text)
   (let ((button (make-instance 'gtk-button :width-request 90 :tooltip-text tooltip-text))

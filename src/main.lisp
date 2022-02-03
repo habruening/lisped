@@ -41,8 +41,8 @@
   (gtk-widget-show-now *help-widget*))
 
 (defun create-mainwindow ()
-  (setf *available-keys* (create-all-keys)) 
-  (setf *active-keys* (create-empty-f-keys))
+  (setf *available-keys* (toolbar:create-all-keys)) 
+  (setf *active-keys* (toolbar:create-empty-f-keys))
   (within-main-loop
     (let ((window (make-instance 'gtk-window
                                  :type :toplevel
@@ -57,7 +57,7 @@
 	  (setf *f-keys-box* (make-instance 'gtk-box
 					    :orientation :horizontal
 					    :spacing 4))
-	  (apply-active-keys-to-toolbar *f-keys-box*)
+	  (toolbar:apply-active-keys-to-toolbar *f-keys-box*)
 	  (gtk-box-pack-start main-widget *f-keys-box* :expand nil)
 	  (let ((textview (make-instance 'gtk-text-view
 					  :wrap-mode :word
