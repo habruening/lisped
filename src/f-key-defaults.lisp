@@ -1,9 +1,7 @@
-(in-package :lisped)
+(in-package :toolbar)
 
 (defconstant +esc-and-f-key-names+ '(ESC F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12))
 (defconstant +empty-key-icon+ "icons/empty.png")
-
-(defstruct key-definition icon-file short-help long-help action)
 
 (defconstant +esc-and-f-keys-definitions+
   (list (cons 'ESC  (make-key-definition :icon-file "icons/empty.png"
@@ -13,9 +11,9 @@
 					 :short-help "help" :long-help""
 					 :action (lambda (widget)
 						   (declare (ignore widget))
-						   (gtk-widget-show-now *help-widget*))))
+						   (gtk-widget-show-now globals:*help-widget*))))
 	(cons 'F2   (make-key-definition :icon-file "icons/menu.svg"
-					 :short-help "menu" :long-help""
+	      				 :short-help "menu" :long-help""
 					 :action nil))
 	(cons 'F3   (make-key-definition :icon-file "icons/new_file.svg"
 					 :short-help "empty file" :long-help""

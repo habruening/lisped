@@ -18,7 +18,7 @@
 								+empty-key-icon+
 								"no action")
 				     :action nil
-				     :short-help (create-short-help-tooltip "undefined")
+				     :short-help (gui-basics:create-short-help-tooltip "undefined")
 				     :long-help nil)))
 	  +esc-and-f-key-names+))
 
@@ -29,7 +29,7 @@
 								(key-definition-icon-file (cdr key-definition))
 								(key-definition-short-help (cdr key-definition)))
 				     :action (key-definition-action (cdr key-definition))
-				     :short-help (create-short-help-tooltip (key-definition-short-help (cdr key-definition)))
+				     :short-help (gui-basics:create-short-help-tooltip (key-definition-short-help (cdr key-definition)))
 				     :long-help nil)))
 	  +esc-and-f-keys-definitions+))
 
@@ -39,7 +39,7 @@
 	(cons 'no-keys (create-empty-f-keys))))
 
 (defun apply-active-keys-to-toolbar (toolbar-box)
-  (dolist (key-button *active-keys*)
+  (dolist (key-button globals:*active-keys*)
     (gtk-box-pack-start toolbar-box (key-instance-button (cdr key-button)) :expand nil)))
 
 (defun activate-keys (toolbar-box new-keys)

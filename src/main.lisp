@@ -1,20 +1,9 @@
 (in-package :lisped)
 
-(defun create-short-help-tooltip (tooltip-text)
-  (let ((css-provider (make-instance 'gtk-css-provider))
-	(box          (make-instance 'gtk-box))
-	(label        (make-instance 'gtk-label :margin 8 :label tooltip-text)))
-    (gtk-css-provider-load-from-path css-provider "css.txt")
-    (gtk-container-add box label)
-    (gtk-style-context-add-provider (gtk-widget-get-style-context box)
-				    css-provider
-				    +gtk-style-provider-priority-application+)
-    box))
 
 (defstruct key-instance button action short-help long-help)
 
 (defparameter *available-keys* nil)
-(defparameter *active-keys* nil)
 
 (defun apply-active-keys-to-help-overlay (help-overlay)
   (dolist (key-button *active-keys*)
@@ -29,7 +18,6 @@
 (defparameter *win* nil)
 (defparameter *help-overlay* nil)
 (defvar *help-overlay-active* nil)
-(defparameter *help-widget* nil)
 
 (defun toggle-help-overlay ()
   (if *help-overlay-active*
