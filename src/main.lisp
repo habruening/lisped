@@ -1,17 +1,15 @@
 (in-package :lisped)
 
 
-(defstruct key-instance button action short-help long-help)
-
 (defparameter *available-keys* nil)
 
 (defun apply-active-keys-to-help-overlay (help-overlay)
-  (dolist (key-button *active-keys*)
-    (let* ((widget-allocation (gtk-widget-get-allocation (key-instance-button (cdr key-button))))
+  (dolist (key-button *active-f-key-buttons*)
+    (let* ((widget-allocation (gtk-widget-get-allocation (key-button-instance-button (cdr key-button))))
 	   (widget-allocation-xy (cons (gdk:gdk-rectangle-x widget-allocation)
 				       (gdk:gdk-rectangle-y widget-allocation))))
       (print widget-allocation-xy)
-      (gtk-fixed-put help-overlay (key-instance-short-help (cdr key-button))
+      (gtk-fixed-put help-overlay (key-button-instance-short-help (cdr key-button))
 		     (car widget-allocation-xy) (cdr widget-allocation-xy)))))
 
 (defparameter *f-keys-box* nil)
@@ -30,7 +28,7 @@
 
 (defun create-mainwindow ()
   (setf *available-keys* (toolbar:create-all-keys)) 
-  (setf *active-keys* (toolbar:create-empty-f-keys))
+  (setf *active-f-key-buttons* (toolbar:create-default-f-keys))
   (within-main-loop
     (let ((window (make-instance 'gtk-window
                                  :type :toplevel
@@ -48,10 +46,10 @@
 	  (toolbar:apply-active-keys-to-toolbar *f-keys-box*)
 	  (gtk-box-pack-start main-widget *f-keys-box* :expand nil)
 	  (let ((textview (make-instance 'gtk-text-view
-					  :wrap-mode :word
-					  :top-margin 2
-					  :left-margin 2
-					  :right-margin 2)))
+					 :wrap-mode :word
+					 :top-margin 2
+					 :left-margin 2
+					 :right-margin 2)))
 	    (gtk-box-pack-start main-widget textview))
 	  (gtk-container-add main-and-help-overlay main-widget))
 	(setf *help-widget* (make-instance 'gtk-fixed))
@@ -61,11 +59,11 @@
       (apply-active-keys-to-help-overlay *help-widget*)
       (gtk-widget-show-all window)
       (gtk-widget-hide *help-widget*)
-      (g-signal-connect (key-instance-button
-			 (cdr (assoc 'F1 *active-keys*))) "clicked"
-			 (lambda (widget)
-			   (declare (ignore widget))
-			   (gtk-widget-show-now *help-widget*)))
+;      (g-signal-connect (key-button-instance-button
+;			 (cdr (assoc 'F1 *active-f-key-buttons*))) "clicked"
+;			 (lambda (widget)
+;			   (declare (ignore widget))
+;			   (gtk-widget-show-now *help-widget*)))
       (g-signal-connect window
 			"button-press-event"
 			(lambda (widget event)
@@ -78,6 +76,7 @@
 			(lambda (widget event)
 			  (declare (ignore widget event))
 			  (toggle-help-overlay))
-			:after T))))
+			:after T)
+      )))
 
 

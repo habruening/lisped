@@ -1,0 +1,17 @@
+In this video I will explain and demonstrate, why I am not a fan of Emacs and
+what I see problematic with Emacs. At the end of this video I'll also give an
+interesting viewpoint to current technologies and practices. This viewpoint for
+sure you will never have heared before.
+
+I must clarify that all the points in this video can be configured. Emacs is
+highly configurable. But I am not the user who wants to configure things. I
+expect a program to be comfortable out of the box.
+
+When starting Emacs for the first time, you immediatelly realise that in Emacs
+nothing is as one normally expects. Emacs greets you with a nice welcome screen,
+which directly guides you to a tutorial. That may be good when starting Emacs
+for the first time. But when you quickly want to scratch something, this is
+annoying. You are forced to create a new file and even give it a file name. You
+may not want this because you don't plan to save your scratchpad.
+
+But now let's edit a few things.
