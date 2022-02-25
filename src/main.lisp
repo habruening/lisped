@@ -13,7 +13,6 @@
 		     (car widget-allocation-xy) (cdr widget-allocation-xy)))))
 
 (defparameter *f-keys-box* nil)
-(defparameter *win* nil)
 (defparameter *help-overlay* nil)
 (defvar *help-overlay-active* nil)
 
@@ -29,13 +28,14 @@
 (defun create-mainwindow ()
   (setf *available-keys* (toolbar:create-all-keys)) 
   (setf *active-f-key-buttons* (toolbar:create-default-f-keys))
+  (setf *main-window* (make-instance 'gtk-window
+                                     :type :toplevel
+                                     :title "Lisped Text"
+                                     :default-width 700
+                                     :default-height 300
+                                     :border-width 5))
+
   (within-main-loop
-    (let ((window (make-instance 'gtk-window
-                                 :type :toplevel
-                                 :title "Lisped Text"
-                                 :default-width 700
-                                 :default-height 300
-                                 :border-width 5)))
       (let ((main-and-help-overlay (make-instance 'gtk-overlay)))
 	(let ((main-widget (make-instance 'gtk-box
 					  :orientation :vertical
@@ -53,25 +53,24 @@
 	    (gtk-box-pack-start main-widget textview))
 	  (gtk-container-add main-and-help-overlay main-widget))
 	(setf *help-widget* (make-instance 'gtk-fixed))
-	(gtk-container-add window main-and-help-overlay)
+	(gtk-container-add *main-window* main-and-help-overlay)
 	(gtk-overlay-add-overlay main-and-help-overlay *help-widget*))
-      (gtk-widget-show-all window)
+      (gtk-widget-show-all *main-window*)
       (apply-active-keys-to-help-overlay *help-widget*)
-      (gtk-widget-show-all window)
+      (gtk-widget-show-all *main-window*)
       (gtk-widget-hide *help-widget*)
-      (g-signal-connect window
+      (g-signal-connect *main-window*
 			"button-press-event"
 			(lambda (widget event)
 			  (declare (ignore widget event))
 			  (gtk-widget-hide *help-widget*)))
-      (setf *win* window)
-      (gtk-widget-add-events window :key-press-mask)
-      (g-signal-connect window
+      (gtk-widget-add-events *main-window* :key-press-mask)
+      (g-signal-connect *main-window*
 			"key-press-event"
 			(lambda (widget event)
 			  (declare (ignore widget event))
 			  (toggle-help-overlay))
 			:after T)
-      )))
+      ))
 
 

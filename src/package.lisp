@@ -2,7 +2,7 @@
 
 (defpackage globals
   (:use :cl)
-  (:export :*help-widget* :*active-f-key-buttons*
+  (:export :*main-window* :*help-widget* :*active-f-key-buttons*
 	   :key-button-definition
    :make-key-button-definition
 	   :key-button-definition-icon-file

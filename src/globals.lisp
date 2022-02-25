@@ -1,5 +1,8 @@
 (in-package :globals)
 
+;;; The main window
+(defparameter *main-window* nil)
+
 ;;; The list of active keys in the f-toolbar. This list is dynamically updated
 ;;; depending on the actions that are available.
 ;;; It is an assoc. The keys is intended to be a symbol as identifier. The values are
@@ -16,4 +19,4 @@
   short-help  ; a short help message that is displayed in the F1 help
   long-help   ; a longer help text that explains more details
   action      ; the function that shall be executed when the key-button is pressed
-  )
+  ):w
