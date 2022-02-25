@@ -11,33 +11,40 @@
     button))
 
 ;;; all relevant data of a key button to be able to activate it 
-(defstruct key-button-instance button action short-help long-help)
+(defstruct key-button-instance button short-help long-help)
+
+(defun make-key-button-instance-with-action (&key button short-help long-help action)
+  (g-signal-connect button "clicked"
+			(lambda (widget)
+			  (declare (ignore widget))
+			  (funcall action )))
+  (make-key-button-instance :button button :short-help short-help :long-help long-help))
 
 ;;; create a list of empty key button instances
 (defun create-empty-f-keys ()
   (mapcar (lambda (key-name)
 	    (cons key-name
 		  (make-key-button-instance :button (create-key-button-widget (string key-name)
-								+empty-key-icon+
-								"no action")
-				     :action nil
-				     :short-help (help-overlay:create-short-help-tooltip "undefined")
-				     :long-help nil)))
+										     +empty-key-icon+
+										     "no action")
+						   :short-help (help-overlay:create-short-help-tooltip "undefined")
+						   :long-help nil)))
 	  +esc-and-f-key-names+))
-
+ 
 ;;; create a list of default key button instances as per definition
 (defun create-default-f-keys ()
   (mapcar (lambda (key-definition)
 	    (cons (car key-definition)
-		  (make-key-button-instance :button (create-key-button-widget
-						     (string (car key-definition))
-						     (key-button-definition-icon-file (cdr key-definition))
-						     (key-button-definition-short-help (cdr key-definition)))
-					    :action (key-button-definition-action
-						     (cdr key-definition))
-					    :short-help (help-overlay:create-short-help-tooltip
-							 (key-button-definition-short-help (cdr key-definition)))
-					    :long-help nil)))
+		  (make-key-button-instance-with-action
+		   :button (create-key-button-widget
+			    (string (car key-definition))
+			    (key-button-definition-icon-file (cdr key-definition))
+			    (key-button-definition-short-help (cdr key-definition)))
+		   :action (key-button-definition-action
+			    (cdr key-definition))
+		   :short-help (help-overlay:create-short-help-tooltip
+				(key-button-definition-short-help (cdr key-definition)))
+		   :long-help nil)))
 	  +esc-and-f-keys-definitions+))
 
 

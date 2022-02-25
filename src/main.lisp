@@ -59,11 +59,6 @@
       (apply-active-keys-to-help-overlay *help-widget*)
       (gtk-widget-show-all window)
       (gtk-widget-hide *help-widget*)
-;      (g-signal-connect (key-button-instance-button
-;			 (cdr (assoc 'F1 *active-f-key-buttons*))) "clicked"
-;			 (lambda (widget)
-;			   (declare (ignore widget))
-;			   (gtk-widget-show-now *help-widget*)))
       (g-signal-connect window
 			"button-press-event"
 			(lambda (widget event)
