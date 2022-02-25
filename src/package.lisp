@@ -21,7 +21,8 @@
    :create-all-keys
 	    :apply-active-keys-to-toolbar
    :key-button-instance-button
-	    :key-button-instance-short-help))
+	    :key-button-instance-short-help
+   :key-button-instance-action))
 
 (defpackage lisped
   (:use :cl :gtk :gobject :globals :toolbar))
