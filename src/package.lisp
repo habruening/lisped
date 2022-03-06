@@ -3,11 +3,11 @@
 (defpackage globals
   (:use :cl)
   (:export :*main-window* :*help-widget* :*active-f-key-buttons*
-	   :key-button-definition
-   :make-key-button-definition
-	   :key-button-definition-icon-file
-   :key-button-definition-short-help
-	   :key-button-definition-action))
+       	   :key-button-definition
+           :make-key-button-definition
+       	   :key-button-definition-icon-file
+           :key-button-definition-short-help
+       	   :key-button-definition-action))
 
 (defpackage help-overlay
   (:use :cl :gtk :gobject)
@@ -16,13 +16,13 @@
 (defpackage toolbar
   (:use :cl :gtk :gobject :globals)
   (:export  :+esc-and-f-key-names+
-   :create-empty-f-keys
-	    :create-default-f-keys
-   :create-all-keys
-	    :apply-active-keys-to-toolbar
-   :key-button-instance-button
-	    :key-button-instance-short-help
-   :key-button-instance-action))
+            :create-empty-f-keys
+       	    :create-default-f-keys
+            :create-all-keys
+       	    :apply-active-keys-to-toolbar
+            :key-button-instance-button
+       	    :key-button-instance-short-help
+            :key-button-instance-action))
 
 (defpackage lisped
   (:use :cl :gtk :gobject :globals :toolbar))

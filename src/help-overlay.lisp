@@ -1,13 +1,13 @@
 (in-package :help-overlay)
 
-;;; create a short help tooltip widget that can be used on the help overlay 
+;;; create a short help tooltip widget that can be used on the help overlay
 (defun create-short-help-tooltip (tooltip-text)
   (let ((css-provider (make-instance 'gtk-css-provider))
-	(box          (make-instance 'gtk-box))
-	(label        (make-instance 'gtk-label :margin 8 :label tooltip-text)))
+       	(box          (make-instance 'gtk-box))
+       	(label        (make-instance 'gtk-label :margin 8 :label tooltip-text)))
     (gtk-css-provider-load-from-path css-provider "css.txt")
     (gtk-container-add box label)
     (gtk-style-context-add-provider (gtk-widget-get-style-context box)
-				    css-provider
-				    +gtk-style-provider-priority-application+)
+                            				    css-provider
+                            				    +gtk-style-provider-priority-application+)
     box))
