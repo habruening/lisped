@@ -1,34 +1,6 @@
 (in-package :lisped)
 
-
-(defparameter *available-keys* nil)
-
-(defun apply-active-keys-to-help-overlay (help-overlay)
-  (dolist (key-button *active-f-key-buttons*)
-          (let* ((widget-allocation (gtk-widget-get-allocation (key-button-instance-button (cdr key-button))))
-             	   (widget-allocation-xy (cons (gdk:gdk-rectangle-x widget-allocation)
-                                  				       (gdk:gdk-rectangle-y widget-allocation))))
-            (print widget-allocation-xy)
-            (gtk-fixed-put help-overlay (key-button-instance-short-help (cdr key-button))
-                    		     (car widget-allocation-xy) (cdr widget-allocation-xy)))))
-
-(defparameter *f-keys-box* nil)
-(defparameter *help-overlay* nil)
-(defvar *help-overlay-active* nil)
-
-(defun toggle-help-overlay ()
-  (if *help-overlay-active*
-    (gtk-widget-hide *help-widget*)
-    (gtk-widget-show-now *help-widget*))
-  (setf *help-overlay-active* (not *help-overlay-active*)))
-
-(defun show-help-widget ()
-  (gtk-widget-show-now *help-widget*))
-
 (defun create-mainwindow ()
-  (setf *available-keys* (toolbar:create-all-keys))
-  (setf *active-f-key-buttons* (toolbar:create-default-f-keys))
-
   (within-main-loop
     (let ((main-window (make-instance 'gtk-window
                                       :type :toplevel
@@ -36,40 +8,40 @@
                                       :default-width 700
                                       :default-height 300
                                       :border-width 5))
-       	  (main-and-help-overlay (make-instance 'gtk-overlay))
+       	  (main-and-help-overlay (setup-help-and-create-overlay-widget))
        	  (main-widget (make-instance 'gtk-box
                                					  :orientation :vertical
                                					  :spacing 6))
-       	  (f-keys-box  (make-instance 'gtk-box
-                                 					:orientation :horizontal
-                                 					:spacing 4))
        	  (textview (make-instance 'gtk-text-view
                           				     :wrap-mode :word
                           				     :top-margin 2
                           				     :left-margin 2
-                          				     :right-margin 2))
-       	  (help-widget (make-instance 'gtk-fixed)))
-      (gtk-box-pack-start main-widget f-keys-box :expand nil)
+                          				     :right-margin 2)))
+
+      (gtk-box-pack-start main-widget (setup-toolbar-and-create-widget) :expand nil)
       (gtk-box-pack-start main-widget textview)
       (gtk-container-add main-and-help-overlay main-widget)
-      (gtk-overlay-add-overlay main-and-help-overlay help-widget)
       (gtk-container-add main-window main-and-help-overlay)
 
-      (toolbar:apply-active-keys-to-toolbar f-keys-box)
-      (apply-active-keys-to-help-overlay help-widget)
+      (apply-active-keys)
+      (apply-active-keys-to-help-overlay)
 
-      (setf *f-keys-box* f-keys-box)
-      (setf *help-widget* help-widget)
-      (setf *main-window* main-window)
 
       (gtk-widget-show-all main-window)
-      (gtk-widget-hide *help-widget*)
+      (toggle-help-overlay)
 
+
+      (g-signal-connect main-and-help-overlay
+                     			"button-press-event"
+                     			(lambda (widget event)
+                           			  (declare (ignore widget event))
+                                (print "signal main and help")))
       (g-signal-connect main-window
                      			"button-press-event"
                      			(lambda (widget event)
                            			  (declare (ignore widget event))
-                           			  (gtk-widget-hide *help-widget*)))
+                                  (print "signal main")))
+                           			  ;(toggle-help-overlay)))
       (gtk-widget-add-events main-window :key-press-mask)
       (g-signal-connect main-window
                      			"key-press-event"

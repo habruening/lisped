@@ -1,8 +1,9 @@
 (require :cl-cffi-gtk)
 
-(defpackage globals
+(defpackage api
   (:use :cl)
-  (:export :*main-window* :*help-widget* :*active-f-key-buttons*
+  (:export :*main-window*
+           :show-help-overlay
        	   :key-button-definition
            :make-key-button-definition
        	   :key-button-definition-icon-file
@@ -11,18 +12,19 @@
 
 (defpackage help-overlay
   (:use :cl :gtk :gobject)
-  (:export :create-short-help-tooltip))
+  (:export :create-short-help-tooltip
+           :setup-help-and-create-overlay-widget
+           :toggle-help-overlay
+           :add-help-widget))
 
 (defpackage toolbar
-  (:use :cl :gtk :gobject :globals)
+  (:use :cl :gtk :gobject :api :help-overlay)
   (:export  :+esc-and-f-key-names+
-            :create-empty-f-keys
-       	    :create-default-f-keys
-            :create-all-keys
-       	    :apply-active-keys-to-toolbar
-            :key-button-instance-button
-       	    :key-button-instance-short-help
-            :key-button-instance-action))
+            :apply-active-keys
+            :apply-active-keys-to-help-overlay
+            :setup-toolbar-and-create-widget
+            ))
+
 
 (defpackage lisped
-  (:use :cl :gtk :gobject :globals :toolbar))
+  (:use :cl :gtk :gobject :api :toolbar :help-overlay))

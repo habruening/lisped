@@ -3,8 +3,7 @@
 ;;; The main window
 (defparameter *main-window* nil)
 
-;;; A gtk widget that is overlayed when F1 is pressed.
-(defparameter *help-widget* nil)
+(defparameter show-help-overlay nil)
 
 ;;; This is the definition format that is used to define the standard behaviour
 ;;; of the toolbar

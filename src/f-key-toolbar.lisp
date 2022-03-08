@@ -11,16 +11,9 @@
     button))
 
 ;;; all relevant data of a key button to be able to activate it
-(defstruct key-button-instance button short-help long-help)
+(defstruct key-button button short-help long-help)
 
-(defun make-key-button-instance-with-action (&key button short-help long-help action)
-  (g-signal-connect button "clicked"
-                 			(lambda (widget)
-                       			  (declare (ignore widget))
-                       			  (funcall action )))
-  (make-key-button-instance :button button :short-help short-help :long-help long-help))
-
-(defun make-key-button-instance-from-definition (key-name key-definition)
+(defun make-key-button-from-definition (key-name key-definition)
   (let ((button-widget (create-key-button-widget
                      		 key-name
                      		 (key-button-definition-icon-file key-definition)
@@ -32,13 +25,21 @@
                    			  (lambda (widget)
                          			    (declare (ignore widget))
                          			    (funcall (key-button-definition-action key-definition)))))
-    (make-key-button-instance :button button-widget :short-help short-help-widget :long-help nil)))
+    (make-key-button :button button-widget :short-help short-help-widget :long-help nil)))
+
+;;; The list of active keys in the f-toolbar. This list is dynamically updated
+;;; depending on the actions that are available.
+;;; It is an assoc. The keys is intended to be a symbol as identifier. The values are
+;;; instances of key-button.
+(defparameter *active-f-key-buttons* nil)
+
+(defparameter *available-keys* nil)
 
 ;;; create a list of empty key button instances
 (defun create-empty-f-keys ()
   (mapcar (lambda (key-name)
              	    (cons key-name
-                    		  (make-key-button-instance-from-definition
+                    		  (make-key-button-from-definition
                     		   (string key-name)
                     		   (make-key-button-definition :icon-file +empty-key-icon+ :short-help "no action" :long-help "undefined"))))
        	  +esc-and-f-key-names+))
@@ -47,7 +48,7 @@
 (defun create-default-f-keys ()
   (mapcar (lambda (key-definition)
              	    (cons (car key-definition)
-                    		  (make-key-button-instance-from-definition
+                    		  (make-key-button-from-definition
                     		   (string (car key-definition))
                     		   (cdr key-definition))))
        	  +esc-and-f-keys-definitions+))
@@ -56,19 +57,38 @@
   (list (cons 'default-f-keys (create-default-f-keys))
        	(cons 'no-keys (create-empty-f-keys))))
 
-(defun apply-active-keys-to-toolbar (toolbar-box)
-  (dolist (key-button globals:*active-f-key-buttons*)
-          (gtk-box-pack-start toolbar-box (key-button-instance-button (cdr key-button)) :expand nil)))
-
 (defun activate-keys (toolbar-box new-keys)
   (if (eql new-keys nil)
     nil
     (progn (print (car (car new-keys)))
      	     (activate-keys toolbar-box (cdr new-keys)))))
 
-(defun clear-toolbar (toolbar-box)
+
+(defparameter *f-keys-box* nil)
+
+(defun setup-toolbar-and-create-widget ()
+  (setf *available-keys* (create-all-keys))
+  (setf *active-f-key-buttons* (create-default-f-keys))
+  (setf *f-keys-box*  (make-instance 'gtk-box
+                                  :orientation :horizontal
+                                  :spacing 4)))
+
+(defun apply-active-keys ()
+  (dolist (key-button *active-f-key-buttons*)
+          (gtk-box-pack-start *f-keys-box* (key-button-button (cdr key-button)) :expand nil)))
+
+(defun apply-active-keys-to-help-overlay ()
+  (dolist (key-button *active-f-key-buttons*)
+          (let* ((widget-allocation (gtk-widget-get-allocation (key-button-button (cdr key-button))))
+             	   (widget-allocation-xy (cons (gdk:gdk-rectangle-x widget-allocation)
+                                  				       (gdk:gdk-rectangle-y widget-allocation))))
+            (print widget-allocation-xy)
+            (add-help-widget (key-button-short-help (cdr key-button))
+                             widget-allocation-xy))))
+
+(defun clear-toolbar ()
   (let ((buttons-to-be-deleted nil))
-    (gtk-container-foreach toolbar-box
+    (gtk-container-foreach *f-keys-box*
                      			   (lambda (key-button)
                            			     (setq buttons-to-be-deleted
                                   				   (append buttons-to-be-deleted (list key-button)))))

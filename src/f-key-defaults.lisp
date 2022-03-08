@@ -14,7 +14,7 @@
        	(cons 'F1   (make-key-button-definition :icon-file "icons/help.png"
                                           						:short-help "help" :long-help""
                                           						:action (lambda ()
-                                                       							  (gtk-widget-show-now globals:*help-widget*))))
+                                                       							  (funcall api:show-help-overlay))))
        	(cons 'F2   (make-key-button-definition :icon-file "icons/menu.svg"
                                     	      					:short-help "menu" :long-help""
                                           						:action nil))
