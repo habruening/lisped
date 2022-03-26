@@ -8,12 +8,14 @@
 (defvar *help-overlay-active* nil)
 
 (defun show-help ()
-  (setf *help-overlay-active* t)
-  (gtk-widget-show-now *help-widget*))
+  (if (not *help-overlay-active*)
+    (setf *help-overlay-active* t)
+    (gtk-widget-show-now *help-widget*)))
 
 (defun hide-help ()
-  (setf *help-overlay-active* nil)
-  (gtk-widget-hide *help-widget*))
+  (if *help-overlay-active*
+    (setf *help-overlay-active* nil)
+    (gtk-widget-hide *help-widget*)))
 
 
 (defun toggle-help ()

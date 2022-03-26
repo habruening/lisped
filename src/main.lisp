@@ -33,18 +33,6 @@
       (gtk-widget-show-all main-window)
       (toggle-help)
 
-
-      ;(g-signal-connect main-and-help-overlay
-      ;               			"button-press-event"
-      ;               			(lambda (widget event)
-      ;                     			  (declare (ignore widget event))
-      ;                          (print "signal main and help")))
-      ;(g-signal-connect main-window
-      ;               			"button-press-event"
-      ;               			(lambda (widget event)
-      ;                     			  (declare (ignore widget event))
-      ;                             (print "signal main")))
-      ;                     			  (toggle-help-overlay)))
       (gtk-widget-add-events main-window :key-press-mask)
       (gtk-widget-add-events main-window :key-release-mask)
       (let ((help-enabled nil)
@@ -63,13 +51,11 @@
                        			"key-release-event"
                        			(lambda (widget event)
                              			  (declare (ignore widget event))
-                                  (bt:make-thread
-                                   (lambda ()
-                                           (setf help-pressed nil)
-                                           (sleep 0.1)
-                                           (if (not help-pressed)
-                                             (progn (hide-help)
-                                                    (setf help-enabled nil)))
-                                           :name "closing help")))
+                                  (setf help-pressed nil)
+                                  (gdk:gdk-threads-add-timeout 100
+                                                 (lambda ()
+                                                         (if (not help-pressed)
+                                                           (progn (hide-help)
+                                                                  (setf help-enabled nil))))))
                        			:after T)
         ))))
