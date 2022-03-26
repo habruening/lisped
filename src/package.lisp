@@ -14,7 +14,9 @@
   (:use :cl :gtk :gobject)
   (:export :create-short-help-tooltip
            :setup-help-and-create-overlay-widget
-           :toggle-help-overlay
+           :show-help
+           :hide-help
+           :toggle-help
            :add-help-widget))
 
 (defpackage toolbar

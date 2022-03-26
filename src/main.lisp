@@ -24,29 +24,52 @@
       (gtk-container-add main-window main-and-help-overlay)
 
       (apply-active-keys)
-      (apply-active-keys-to-help-overlay)
 
 
       (gtk-widget-show-all main-window)
-      (toggle-help-overlay)
+
+      (apply-active-keys-to-help-overlay)
+
+      (gtk-widget-show-all main-window)
+      (toggle-help)
 
 
-      (g-signal-connect main-and-help-overlay
-                     			"button-press-event"
-                     			(lambda (widget event)
-                           			  (declare (ignore widget event))
-                                (print "signal main and help")))
-      (g-signal-connect main-window
-                     			"button-press-event"
-                     			(lambda (widget event)
-                           			  (declare (ignore widget event))
-                                  (print "signal main")))
-                           			  ;(toggle-help-overlay)))
+      ;(g-signal-connect main-and-help-overlay
+      ;               			"button-press-event"
+      ;               			(lambda (widget event)
+      ;                     			  (declare (ignore widget event))
+      ;                          (print "signal main and help")))
+      ;(g-signal-connect main-window
+      ;               			"button-press-event"
+      ;               			(lambda (widget event)
+      ;                     			  (declare (ignore widget event))
+      ;                             (print "signal main")))
+      ;                     			  (toggle-help-overlay)))
       (gtk-widget-add-events main-window :key-press-mask)
-      (g-signal-connect main-window
-                     			"key-press-event"
-                     			(lambda (widget event)
-                           			  (declare (ignore widget event))
-                           			  (toggle-help-overlay))
-                     			:after T)
-      )))
+      (gtk-widget-add-events main-window :key-release-mask)
+      (let ((help-enabled nil)
+            (help-pressed nil))
+        (g-signal-connect main-window
+                       			"key-press-event"
+                       			(lambda (widget event)
+                             			  (declare (ignore widget event))
+                                  (if (not help-enabled)
+                                    (progn (show-help)
+                                           (setf help-enabled t)))
+                                  (setf help-pressed t))
+                       			:after T)
+
+        (g-signal-connect main-window
+                       			"key-release-event"
+                       			(lambda (widget event)
+                             			  (declare (ignore widget event))
+                                  (bt:make-thread
+                                   (lambda ()
+                                           (setf help-pressed nil)
+                                           (sleep 0.1)
+                                           (if (not help-pressed)
+                                             (progn (hide-help)
+                                                    (setf help-enabled nil)))
+                                           :name "closing help")))
+                       			:after T)
+        ))))
