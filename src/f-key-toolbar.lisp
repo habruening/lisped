@@ -1,17 +1,17 @@
 (in-package :toolbar)
 
 ;;; create a key button widget with the given icon and tooltip text
-(defun create-key-button-widget (name icon tooltip-text)
-  (let ((button (make-instance 'gtk-button :width-request 90 :tooltip-text tooltip-text))
+(defun create-key-button-widget (name icon-filename tooltip-text)
+  (let ( (button  (make-instance 'gtk-button :width-request 90 :tooltip-text tooltip-text))
       	 (box    (make-instance 'gtk-box :orientation :vertical :spacing 4))
       	 (label  (make-instance 'gtk-label :use-markup t :label name)))
-    (gtk-box-pack-start box (gtk-image-new-from-file icon))
+    (gtk-box-pack-start box (gtk-image-new-from-file icon-filename))
     (gtk-box-pack-start box label)
     (gtk-container-add button box)
     button))
 
-;;; all relevant data of a key button to be able to activate it
-(defstruct key-button button short-help long-help)
+;;; all relevant data and of a key button to be able to activate it
+(defstruct key-button button-widget short-help-widget long-help-widget)
 
 (defun make-key-button-from-definition (key-name key-definition)
   (let ((button-widget (create-key-button-widget
@@ -25,7 +25,7 @@
                    			  (lambda (widget)
                          			    (declare (ignore widget))
                          			    (funcall (key-button-definition-action key-definition)))))
-    (make-key-button :button button-widget :short-help short-help-widget :long-help nil)))
+    (make-key-button :button-widget button-widget :short-help-widget short-help-widget :long-help-widget nil)))
 
 ;;; The list of active keys in the f-toolbar. This list is dynamically updated
 ;;; depending on the actions that are available.
@@ -75,15 +75,15 @@
 
 (defun apply-active-keys ()
   (dolist (key-button *active-f-key-buttons*)
-          (gtk-box-pack-start *f-keys-box* (key-button-button (cdr key-button)) :expand nil)))
+          (gtk-box-pack-start *f-keys-box* (key-button-button-widget (cdr key-button)) :expand nil)))
 
 (defun apply-active-keys-to-help-overlay ()
   (dolist (key-button *active-f-key-buttons*)
-          (let* ((widget-allocation (gtk-widget-get-allocation (key-button-button (cdr key-button))))
+          (let* ((widget-allocation (gtk-widget-get-allocation (key-button-button-widget (cdr key-button))))
              	   (widget-allocation-xy (cons (gdk:gdk-rectangle-x widget-allocation)
                                   				       (gdk:gdk-rectangle-y widget-allocation))))
             (print widget-allocation-xy)
-            (add-help-widget (key-button-short-help (cdr key-button))
+            (add-help-widget (key-button-short-help-widget (cdr key-button))
                              widget-allocation-xy))))
 
 (defun clear-toolbar ()

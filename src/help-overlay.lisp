@@ -15,7 +15,7 @@
     (setf *help-overlay-active* t)
     (setf *help-widget* help-widget)
     (setf api:show-help-overlay 'show-help-widget)
-    (g-signal-connect main-and-help-widget
+    (g-signal-connect main-and-help-overlay
                         "button-press-event"
                         (lambda (widget event)
                                 (declare (ignore widget event))
