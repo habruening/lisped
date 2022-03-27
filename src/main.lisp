@@ -49,10 +49,10 @@
                                   (declare (ignore widget event))
                                   (setf f1-pressed_p nil)
                                   (setf closing-help
-                                        (or closing-help        ; do nothing if closing timeout already running
+                                        (or closing-help        ; timeout already running or create new timeout
                                             (gdk:gdk-threads-add-timeout 100
                                                                          (lambda ()
                                                                                  (setf closing-help nil)
                                                                                  (if (not f1-pressed_p)
-                                                                                   (hide-help-if-active))))))
-                                  :after T))))))
+                                                                                   (hide-help-if-active)))))))
+                          :after T)))))
