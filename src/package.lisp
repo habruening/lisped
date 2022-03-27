@@ -15,7 +15,9 @@
   (:export :create-short-help-tooltip
            :setup-help-and-create-overlay-widget
            :show-help
+           :show-help-if-not-active
            :hide-help
+           :hide-help-if-active
            :toggle-help
            :add-help-widget))
 
