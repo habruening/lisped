@@ -51,7 +51,7 @@
                     		  (make-key-button-from-definition
                     		   (string (car key-definition))
                     		   (cdr key-definition))))
-       	  +esc-and-f-keys-definitions+))
+       	  (cdr (assoc toolbar::'startup +esc-and-f-keys-definitions+))))
 
 (defun create-all-keys ()
   (list (cons 'default-f-keys (create-default-f-keys))
